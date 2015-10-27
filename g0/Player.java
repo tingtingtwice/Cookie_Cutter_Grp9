@@ -50,6 +50,9 @@ public class Player implements cc2.sim.Player {
 		}
 		// find all valid cuts
 		ArrayList <Move> moves = new ArrayList <Move> ();
+		ArrayList <Move> moves11 = new ArrayList <Move> ();
+		ArrayList <Move> moves8 = new ArrayList <Move> ();
+		ArrayList <Move> moves5 = new ArrayList <Move> ();
 		for (int i = 0 ; i != dough.side() ; ++i)
 			for (int j = 0 ; j != dough.side() ; ++j) {
 				Point p = new Point(i, j);
@@ -60,10 +63,30 @@ public class Player implements cc2.sim.Player {
 						Shape s = rotations[ri];
 						if (dough.cuts(s, p))
 							moves.add(new Move(si, ri, p));
+							if(shapes[si].points.length == 11){
+								moves11.add(new Move(si,ri,p));
+							}
+							else if(shapes[si].points.length == 8){
+								moves8.add(new Move(si,ri,p));
+							}
+							else{
+								moves5.add(new Move(si,ri,p));
+							}
 					}
 				}
 			}
 		// return a cut randomly
-		return moves.get(gen.nextInt(moves.size()));
+		if(moves11.size()>0){
+			return moves11.get(gen.nextInt(moves11.size()));			
+		}
+		else if(moves8.size()>0){
+			return moves8.get(gen.nextInt(moves8.size()));						
+		}
+		else if(moves5.size()>0){
+			return moves5.get(gen.nextInt(moves5.size()));			
+		}
+		else{
+			return moves.get(gen.nextInt(moves.size()));
+		}
 	}
 }
