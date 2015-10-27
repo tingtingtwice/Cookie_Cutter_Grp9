@@ -63,10 +63,10 @@ public class Player implements cc2.sim.Player {
 						Shape s = rotations[ri];
 						if (dough.cuts(s, p))
 							moves.add(new Move(si, ri, p));
-							if(shapes[si].points.length == 11){
+							if(shapes[si].points.size() == 11){
 								moves11.add(new Move(si,ri,p));
 							}
-							else if(shapes[si].points.length == 8){
+							else if(shapes[si].points.size() == 8){
 								moves8.add(new Move(si,ri,p));
 							}
 							else{
