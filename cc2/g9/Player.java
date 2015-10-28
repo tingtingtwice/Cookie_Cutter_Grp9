@@ -17,22 +17,47 @@ public class Player implements cc2.sim.Player {
 	{
 		// check if first try of given cutter length
 		Point[] cutter = new Point [length];
-		if (row_2.length != cutter.length - 1) {
-			// save cutter length to check for retries
-			row_2 = new boolean [cutter.length - 1];
-			for (int i = 0 ; i != cutter.length ; ++i)
-				cutter[i] = new Point(i, 0);
-		} else {
-			// pick a random cell from 2nd row but not same
-			int i;
-			do {
-				i = gen.nextInt(cutter.length - 1);
-			} while (row_2[i]);
-			row_2[i] = true;
-			cutter[cutter.length - 1] = new Point(i, 1);
-			for (i = 0 ; i != cutter.length - 1 ; ++i)
-				cutter[i] = new Point(i, 0);
+		if (length == 11)
+		{
+			int half = length / 2+1;
+			for(int i=0; i<length; i++)
+			{
+				if (i < half)
+				{
+					cutter[i] = new Point(i, 0);
+				}
+				else cutter[i] = new Point(half-1, i-(half-1));
+			}
 		}
+		if (length == 8)
+		{
+			for(int i=0; i<length; i++)
+				if (i<4) cutter[i] = new Point(i,0);
+				else cutter[i] = new Point(i-4,1);
+		}
+		if (length == 5)
+		{
+			if (row_2.length != cutter.length - 1) {
+				// save cutter length to check for retries
+				row_2 = new boolean [cutter.length - 1];
+				for (int i = 0 ; i != cutter.length ; ++i)
+					cutter[i] = new Point(i, 0);
+			} else {
+				// pick a random cell from 2nd row but not same
+				int i;
+				do {
+					i = gen.nextInt(cutter.length - 1);
+				} while (row_2[i]);
+				row_2[i] = true;
+				cutter[cutter.length - 1] = new Point(i, 1);
+				for (i = 0 ; i != cutter.length - 1 ; ++i)
+					cutter[i] = new Point(i, 0);
+			}
+		}
+
+		
+		
+		
 		return new Shape(cutter);
 	}
 
@@ -58,11 +83,12 @@ public class Player implements cc2.sim.Player {
 				Point p = new Point(i, j);
 				for (int si = 0 ; si != shapes.length ; ++si) {
 					if (shapes[si] == null) continue;
+					// rotations are clockwise
 					Shape[] rotations = shapes[si].rotations();
 					for (int ri = 0 ; ri != rotations.length ; ++ri) {
 						Shape s = rotations[ri];
 						if (dough.cuts(s, p)){
-							if(shapes[si].size() == 11){
+							if(shapes[si].size() == 11 && (ri == 0 || ri == 2)){
 								moves11.add(new Move(si,ri,p));
 							}
 							else if(shapes[si].size() == 8){
