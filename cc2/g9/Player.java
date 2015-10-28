@@ -75,23 +75,15 @@ public class Player implements cc2.sim.Player {
 					}
 				}
 			}
-		int this_index;
-		Move this_move;
 		// return a cut randomly
 		if(moves11.size()>0){
-			this_index = gen.nextInt(moves11.size());
-			this_move =  moves11.get(this_index);
-			return this_move;			
+			return moves11.get(gen.nextInt(moves11.size()));	
 		}
 		else if(moves8.size()>0){
-			this_index = gen.nextInt(moves8.size());
-			this_move =  moves8.get(this_index);
-			return this_move;						
+			return moves8.get(gen.nextInt(moves8.size()));
 		}
 		else {
-			this_index = gen.nextInt(moves5.size());
-			this_move =  moves5.get(this_index);
-			return this_move;			
+			return moves5.get(gen.nextInt(moves5.size()));
 		}
 	}
 }
