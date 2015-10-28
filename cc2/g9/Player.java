@@ -78,25 +78,19 @@ public class Player implements cc2.sim.Player {
 		int this_index;
 		Move this_move;
 		// return a cut randomly
-		System.out.println("size of 11: " + moves11.size());
-		System.out.println("size of 8: " + moves8.size());
-		System.out.println("size of 5: " + moves5.size());
 		if(moves11.size()>0){
 			this_index = gen.nextInt(moves11.size());
 			this_move =  moves11.get(this_index);
-			moves11.remove(this_index);
 			return this_move;			
 		}
 		else if(moves8.size()>0){
 			this_index = gen.nextInt(moves8.size());
 			this_move =  moves8.get(this_index);
-			moves8.remove(this_index);
 			return this_move;						
 		}
 		else {
 			this_index = gen.nextInt(moves5.size());
 			this_move =  moves5.get(this_index);
-			moves5.remove(this_index);
 			return this_move;			
 		}
 	}
