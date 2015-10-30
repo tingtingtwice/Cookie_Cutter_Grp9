@@ -12,36 +12,64 @@ public class Player implements cc2.sim.Player {
 	private boolean[] row_2 = new boolean [0];
 
 	private Random gen = new Random();
+	
+	private boolean firstTry11 = true;
+	private boolean firstTry8 = true;
+	private boolean firstTry5 = true;
 
 	public Shape cutter(int length, Shape[] shapes, Shape[] opponent_shapes)
 	{
 		// check if first try of given cutter length
 		Point[] cutter = new Point [length];
+		///////// 11 shape //////////
 		if (length == 11)
 		{
-			int half = length / 2+1;
-			for(int i=0; i<length; i++)
+			if (firstTry11) 
 			{
-				if (i < half)
+				int half = length / 2+1;
+				for(int i=0; i<length; i++)
 				{
-					cutter[i] = new Point(i, 0);
+					if (i < half) cutter[i] = new Point(i, 0);
+					else cutter[i] = new Point(half-1, i-(half-1));
+					firstTry11 = false;
 				}
-				else cutter[i] = new Point(half-1, i-(half-1));
+			} 
+			else
+			{
+				int half = length / 2;
+				for(int i=0; i<length; i++)
+				{
+					if (i < half) cutter[i] = new Point(i, 0);
+					else cutter[i] = new Point(half-1, i-(half-1));
+				}
 			}
 		}
+		///////// 8 shape //////////
 		if (length == 8)
 		{
-			for(int i=0; i<length; i++)
-				if (i<4) cutter[i] = new Point(i,0);
-				else cutter[i] = new Point(i-4,1);
+			if (firstTry8)
+			{
+				for(int i=0; i<length; i++)
+					if (i<4) cutter[i] = new Point(i,0);
+					else cutter[i] = new Point(i-4,1);
+				firstTry8 = false;
+			}
+			else
+			{
+				for(int i=0; i<length; i++)
+					if (i<5) cutter[i] = new Point(i,0);
+					else cutter[i] = new Point(i-5,1);
+			}
 		}
+		///////// 5 shape //////////
 		if (length == 5)
 		{
-			if (row_2.length != cutter.length - 1) {
+			if (firstTry5) {
 				// save cutter length to check for retries
 				row_2 = new boolean [cutter.length - 1];
 				for (int i = 0 ; i != cutter.length ; ++i)
 					cutter[i] = new Point(i, 0);
+				firstTry5 = false;
 			} else {
 				// pick a random cell from 2nd row but not same
 				int i;
