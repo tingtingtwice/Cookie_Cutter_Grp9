@@ -14,7 +14,7 @@ public class Player implements cc2.sim.Player {
 	private Random gen = new Random();
 	
 	private boolean firstTry11 = true;
-	private boolean firstTry8 = true;
+	private int firstTry8 = 0;
 	private boolean firstTry5 = true;
 
 	public Shape cutter(int length, Shape[] shapes, Shape[] opponent_shapes)
@@ -47,18 +47,31 @@ public class Player implements cc2.sim.Player {
 		///////// 8 shape //////////
 		if (length == 8)
 		{
-			if (firstTry8)
+			if (firstTry8 == 0)
 			{
 				for(int i=0; i<length; i++)
 					if (i<4) cutter[i] = new Point(i,0);
 					else cutter[i] = new Point(i-4,1);
-				firstTry8 = false;
+				firstTry8 = 1;
 			}
 			else
 			{
-				for(int i=0; i<length; i++)
+				switch(firstTry8)
+				{
+				case 1: 
+					for(int i=0; i<length; i++)
 					if (i<5) cutter[i] = new Point(i,0);
 					else cutter[i] = new Point(i-5,1);
+					firstTry8++;
+					break;
+				case 2:
+					for(int i=0; i<length; i++)
+					if (i<5) cutter[i] = new Point(i,0);
+					else cutter[i] = new Point(i-4,1);
+					break;
+				
+				}
+				
 			}
 		}
 		///////// 5 shape //////////
