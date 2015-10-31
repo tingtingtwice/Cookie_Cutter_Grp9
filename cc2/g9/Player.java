@@ -13,10 +13,47 @@ public class Player implements cc2.sim.Player {
 
 	private Random gen = new Random();
 	
-	private boolean firstTry11 = true;
+	private int firstTry11 = 0;
 	private int firstTry8 = 0;
-	private boolean firstTry5 = true;
+	private int firstTry5 = 0;
 
+	private boolean defensive = false;
+	
+	
+	
+	public boolean decideStrategy(Shape[] opponent_shapes)
+	{
+		int range_i, range_j, min_i, max_i, min_j, max_j;
+		min_i = 10000; min_j = 10000;
+		max_i = -1; max_j = -1;
+		for (Shape s : opponent_shapes)
+			if (s.size() == 11)
+			{
+				for (Point p : s)
+				{
+					if (p.i > max_i) max_i = p.i;
+					if (p.i < min_i) min_i = p.i;
+					if (p.j > max_j) max_j = p.j;
+					if (p.j < min_j) min_j = p.j;
+				}
+			}
+		range_i = max_i - min_i + 1;
+		range_j = max_j - min_j + 1;
+		// the square shape (1st chose)
+		if (firstTry11 == 1)
+		{
+			if (range_i <= 4 && range_j <= 4) return true;
+			else return false;
+		}
+		else
+		{
+			if ((range_i <= 5 && range_j <= 4) || (range_i <= 4 && range_j <= 5)) return true;
+			else return false;
+		}
+		
+	}
+	
+	
 	public Shape cutter(int length, Shape[] shapes, Shape[] opponent_shapes)
 	{
 		// check if first try of given cutter length
@@ -24,24 +61,36 @@ public class Player implements cc2.sim.Player {
 		///////// 11 shape //////////
 		if (length == 11)
 		{
-			if (firstTry11) 
+			int half;
+			switch(firstTry11)
 			{
-				int half = length / 2+1;
-				for(int i=0; i<length; i++)
-				{
-					if (i < half) cutter[i] = new Point(i, 0);
-					else cutter[i] = new Point(half-1, i-(half-1));
-					firstTry11 = false;
-				}
-			} 
-			else
-			{
-				int half = length / 2;
+			case 0: 
+				half = length / 2+1;
 				for(int i=0; i<length; i++)
 				{
 					if (i < half) cutter[i] = new Point(i, 0);
 					else cutter[i] = new Point(half-1, i-(half-1));
 				}
+				firstTry11++;
+				break;
+			case 1:
+				half = length / 2 ;
+				for(int i=0; i<length; i++)
+				{
+					if (i < half) cutter[i] = new Point(i, 0);
+					else cutter[i] = new Point(half-1, i-(half-1));
+				}
+				firstTry11++;
+				break;
+			case 2:
+				half = length / 2 ;
+				for(int i=0; i<length; i++)
+				{
+					if (i < half) cutter[i] = new Point(i, 0);
+					else cutter[i] = new Point(0, i-(half-1));
+				}
+				firstTry11++;
+				break;
 			}
 		}
 		///////// 8 shape //////////
@@ -52,7 +101,7 @@ public class Player implements cc2.sim.Player {
 				for(int i=0; i<length; i++)
 					if (i<4) cutter[i] = new Point(i,0);
 					else cutter[i] = new Point(i-4,1);
-				firstTry8 = 1;
+				firstTry8++;
 			}
 			else
 			{
@@ -68,21 +117,26 @@ public class Player implements cc2.sim.Player {
 					for(int i=0; i<length; i++)
 					if (i<5) cutter[i] = new Point(i,0);
 					else cutter[i] = new Point(i-4,1);
+					firstTry8++;
 					break;
-				
+				case 3:
+					for(int i=0; i<length; i++)
+					if (i<5) cutter[i] = new Point(i,0);
+					else cutter[i] = new Point(i-3,1);
+					firstTry8++;
+					break;
 				}
-				
 			}
 		}
 		///////// 5 shape //////////
 		if (length == 5)
 		{
-			if (firstTry5) {
+			if (firstTry5 == 0) {
 				// save cutter length to check for retries
 				row_2 = new boolean [cutter.length - 1];
 				for (int i = 0 ; i != cutter.length ; ++i)
 					cutter[i] = new Point(i, 0);
-				firstTry5 = false;
+				firstTry5++;
 			} else {
 				// pick a random cell from 2nd row but not same
 				int i;
@@ -93,17 +147,15 @@ public class Player implements cc2.sim.Player {
 				cutter[cutter.length - 1] = new Point(i, 1);
 				for (i = 0 ; i != cutter.length - 1 ; ++i)
 					cutter[i] = new Point(i, 0);
+				firstTry5++;
 			}
 		}
-
-		
-		
-		
 		return new Shape(cutter);
 	}
 
 	public Move cut(Dough dough, Shape[] shapes, Shape[] opponent_shapes)
 	{
+		defensive = decideStrategy(opponent_shapes);
 		// prune larger shapes if initial move
 		if (dough.uncut()) {
 			int min = Integer.MAX_VALUE;
