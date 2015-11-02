@@ -6,6 +6,7 @@ import cc2.sim.Dough;
 import cc2.sim.Move;
 
 import java.util.*;
+import static java.lang.Math.*;
 
 public class Player implements cc2.sim.Player {
 
@@ -182,6 +183,16 @@ public class Player implements cc2.sim.Player {
 						Shape s = rotations[ri];
 						if (dough.cuts(s, p)){
 							if(shapes[si].size() == 11 && (ri == 0 || ri == 2)){
+								if(defensive == false){
+									int returnIndex = find11SpotCornerStrategy(dough, moves11, shapes);
+									System.out.println(returnIndex);
+									if(returnIndex >= 0){
+										return moves11.get(returnIndex);				
+									}
+									else{
+										return moves11.get(gen.nextInt(moves11.size()));
+									}
+								}
 								moves11.add(new Move(si,ri,p));
 							}
 							else if(shapes[si].size() == 8){
@@ -205,4 +216,173 @@ public class Player implements cc2.sim.Player {
 			return moves5.get(gen.nextInt(moves5.size()));
 		}
 	}
+	
+	public int find11SpotCornerStrategy(Dough dough, ArrayList<Move> moves11, Shape[] shapes){
+		Move cur;
+		Point[] boardPoints = new Point[11];
+		boolean goodCut;
+		int backupCut = -1;
+		for(int z = 0; z<moves11.size(); z++){
+			goodCut = true;
+			cur = moves11.get(z);
+			int index = 0;			
+			for (Point p : shapes[cur.shape]){
+				boardPoints[index] = new Point(p.i + cur.point.i, p.j + cur.point.j);
+				index++;
+			}
+			boardPoints = sortPoints(boardPoints);
+			for(int i = 0; i<boardPoints.length; i++){
+		//		System.out.println(boardPoints[i].i + ", " + boardPoints[i].j);
+			}
+			System.out.println();
+			Point[] corners = getCorners(boardPoints);
+			
+			for(int i = Math.min(corners[0].i, corners[1].i); i <= Math.max(corners[0].i, corners[1].i); i++){
+				for(int j = Math.min(corners[0].j, corners[1].j); j <= Math.max(corners[0].j, corners[1].j); j++){
+					if(i == -1 || j == -1 || i == dough.side() || j == dough.side()){
+						continue;
+					}
+					else if(i < -1 || j < -1 || i > dough.side() || j > dough.side()){
+						goodCut = false;
+						System.err.println(i + ", " + j);
+//						 System.exit(0);
+						break;
+					}
+					else if(dough.uncut(i,j) == false){
+						goodCut = false;
+						System.err.println(i + ", " + j);
+	//					 System.exit(0);
+						break;
+					}										
+				}
+				if(goodCut == false){
+					break;
+				}				
+			}
+			
+
+			if(goodCut == true){
+				backupCut = z;
+//				return z;
+			}
+
+			//
+			int extendI = (corners[0].i > corners[2].i)? corners[0].i + 1 : corners[0].i - 1;
+			int extendJ = (corners[1].j > corners[2].j)? corners[1].j + 1 : corners[1].j - 1;
+			if(extendI > 0 && extendI < dough.side()){
+				for(int j = Math.min(corners[2].j, extendJ); j <= Math.max(corners[2].j, extendJ); j++){
+					if(j < 0 || j >= dough.side()){
+						continue;
+					}
+					else if(dough.uncut(extendI,j) == true){
+						goodCut = false;
+					}
+				}
+			}
+			if(goodCut == false){
+				continue;
+			}
+			if(extendJ > 0 && extendJ < dough.side()){
+				for(int i = Math.min(corners[2].i, extendI); i <= Math.max(corners[2].i, extendI); i++){
+					if(i < 0 || i >= dough.side()){
+						continue;
+					}
+					else if(dough.uncut(i,extendJ) == true){
+						goodCut = false;
+					}
+				}
+			}
+			if(goodCut == true){
+				return z;
+			}
+		}
+
+		return backupCut;
+	}
+	
+	public Point[] sortPoints(Point[] points){
+		ArrayList <Point> pointList = new ArrayList <Point> ();
+		for(int i = 0; i<points.length; i++){
+			pointList.add(points[i]);
+		}
+		ArrayList <Point> pointSorted = new ArrayList<Point>();
+		while(pointList.size() > 0){
+			int index = 0;
+			int minI;
+			int minJ;
+			for(int i = 0; i< pointList.size(); i++){
+				Point p = pointList.get(i);
+				if(p.i < pointList.get(index).i){
+					index = i;
+				}
+				else if(p.i == pointList.get(index).i){
+					if(p.j < pointList.get(index).j){
+						index = i;
+					}
+				}
+			}
+			pointSorted.add(pointList.get(index));
+			pointList.remove(index);
+		}
+		
+		for(int i = 0; i < points.length; i++){
+			points[i] = pointSorted.get(i);
+		}
+		
+		return points;
+	}
+	
+	// corners: {end of horizontal leg, end of vertical leg, corner}
+	public Point[] getCorners(Point[] points){
+		Point[] corners = new Point[3];
+		int index; 
+		if(points[1].i > points[0].i){
+			if(points[points.length - 1].j == points[0].j){
+				corners[0] = points[0];
+				corners[2] = points[points.length - 1];
+				for(int i = 0; i < points.length; i++){
+					if(points[i].j != points[0].j){
+						corners[1] = points[i];
+						break;
+					}
+				}
+			}
+			else{
+				corners[0] = points[0];
+				corners[1] = points[points.length - 1];
+				for(int i = 0; i < points.length; i++){
+					if(points[i].j != points[0].j){
+						corners[2] = points[i - 1];
+						break;
+					}					
+				}
+			}
+		}
+		else{
+			if(points[points.length - 1].j == points[0].j){
+				corners[2] = points[0];
+				corners[0] = points[points.length - 1];
+				for(int i = 0; i < points.length; i++){
+					if(points[i].i != points[0].i){
+						corners[1] = points[i - 1];
+						break;
+					}
+				}
+			}			
+			else{
+				corners[1] = points[0];
+				corners[0] = points[points.length - 1];
+				for(int i = 0; i < points.length; i++){
+					if(points[i].i != points[0].i){
+						corners[2] = points[i - 1];
+						break;
+					}					
+				}
+			}
+		}
+		
+		return corners;
+	}
+
+	
 }
