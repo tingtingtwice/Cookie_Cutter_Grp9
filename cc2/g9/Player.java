@@ -43,7 +43,8 @@ public class Player implements cc2.sim.Player {
 		// the square shape (1st chose)
 		if (firstTry11 == 1)
 		{
-			if (range_i <= 4 && range_j <= 4) return true;
+			// if (range_i <= 4 && range_j <= 4) return true;
+			if (range_i <= 5 && range_j <= 5) return true;
 			else return false;
 		}
 		else
@@ -192,6 +193,7 @@ public class Player implements cc2.sim.Player {
 									else{
 										return moves11.get(gen.nextInt(moves11.size()));
 									}
+
 								}
 								moves11.add(new Move(si,ri,p));
 							}
@@ -207,7 +209,13 @@ public class Player implements cc2.sim.Player {
 			}
 		// return a cut randomly
 		if(moves11.size()>0){
-			return moves11.get(gen.nextInt(moves11.size()));	
+			if (defensive == true) {
+				Move defenseMv = Utils.getDefenseIndex(dough, shapes);
+				if (defenseMv != null) return defenseMv;
+			}
+			Move thisMv = moves11.get(gen.nextInt(moves11.size()));
+			// System.out.println("Just moved shape, rotation, point: " + thisMv.shape + ", " + thisMv.rotation + ", " + thisMv.point);
+			return thisMv;
 		}
 		else if(moves8.size()>0){
 			return moves8.get(gen.nextInt(moves8.size()));
@@ -383,6 +391,5 @@ public class Player implements cc2.sim.Player {
 		
 		return corners;
 	}
-
 	
 }
