@@ -184,17 +184,6 @@ public class Player implements cc2.sim.Player {
 						Shape s = rotations[ri];
 						if (dough.cuts(s, p)){
 							if(shapes[si].size() == 11 && (ri == 0 || ri == 2)){
-								if(defensive == false){
-									int returnIndex = find11SpotCornerStrategy(dough, moves11, shapes);
-									System.out.println(returnIndex);
-									if(returnIndex >= 0){
-										return moves11.get(returnIndex);				
-									}
-									else{
-										return moves11.get(gen.nextInt(moves11.size()));
-									}
-
-								}
 								moves11.add(new Move(si,ri,p));
 							}
 							else if(shapes[si].size() == 8){
@@ -209,7 +198,15 @@ public class Player implements cc2.sim.Player {
 			}
 		// return a cut randomly
 		if(moves11.size()>0){
-			if (defensive == true) {
+			if(defensive == false){
+				int returnIndex = find11SpotCornerStrategy(dough, moves11, shapes);
+				//System.out.println(returnIndex);
+				if(returnIndex >= 0){
+					return moves11.get(returnIndex);				
+				}
+
+			}			
+			else {
 				Move defenseMv = Utils.getDefenseIndex(dough, shapes);
 				if (defenseMv != null) return defenseMv;
 			}
@@ -242,7 +239,7 @@ public class Player implements cc2.sim.Player {
 			for(int i = 0; i<boardPoints.length; i++){
 		//		System.out.println(boardPoints[i].i + ", " + boardPoints[i].j);
 			}
-			System.out.println();
+//			System.out.println();
 			Point[] corners = getCorners(boardPoints);
 			
 			for(int i = Math.min(corners[0].i, corners[1].i); i <= Math.max(corners[0].i, corners[1].i); i++){
@@ -252,13 +249,11 @@ public class Player implements cc2.sim.Player {
 					}
 					else if(i < -1 || j < -1 || i > dough.side() || j > dough.side()){
 						goodCut = false;
-						System.err.println(i + ", " + j);
 //						 System.exit(0);
 						break;
 					}
 					else if(dough.uncut(i,j) == false){
 						goodCut = false;
-						System.err.println(i + ", " + j);
 	//					 System.exit(0);
 						break;
 					}										
