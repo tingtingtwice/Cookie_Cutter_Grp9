@@ -19,12 +19,24 @@ public class Utils {
     // 	}
     // 	return false;
     // }
+    
+    
     public static double distance(Point a, Point b){
     	return Math.sqrt(Math.pow(a.i - b.i, 2) + Math.pow(a.j - b.j, 2)); 
     }
-    public static Move eachQueueMove(Dough dough, Shape s, int gapOffset, int colOffset ) {
+    public static Move eachQueueMove(Dough dough, Shape s, int gapOffset, int colOffset, int row, boolean flag4 ) {
         // ---------- diagonal queue ----------
-        for (int i = 2 ; i <= dough.side() ; i=i+gapOffset ){
+    	int i = 0;
+    	if(flag4)
+    	{
+    		switch(row)
+    		{
+    		case 2: i = 2; break;
+    		case 3: i = 0; break;
+    		case 4: i = 2;
+    		}
+    	}
+        for (; i <= dough.side() ; i=i+gapOffset ){
             int j = (-1)*i + colOffset;
             if (j >= 0){
                 Point thisPt = new Point(i, j);
@@ -37,33 +49,66 @@ public class Utils {
         }
         return null;
     }
-    public static Move getDefenseIndex(Dough dough, Shape[] shapes) {
+    
+    public static two_tuple getSize(Shape[] shapes, int size)
+    {
+    	int range_i, range_j, min_i, max_i, min_j, max_j;
+		min_i = 10000; min_j = 10000;
+		max_i = -1; max_j = -1;
+		for (Shape s : shapes)
+			if (s.size() == size)
+			{
+				for (Point p : s)
+				{
+					if (p.i > max_i) max_i = p.i;
+					if (p.i < min_i) min_i = p.i;
+					if (p.j > max_j) max_j = p.j;
+					if (p.j < min_j) min_j = p.j;
+				}
+			}
+		range_i = max_i - min_i + 1;
+		range_j = max_j - min_j + 1;
+		return new two_tuple(range_i, range_j);
+    }
+    
+    public static int getGapOffset(Shape[] opponent_shapes)
+    {
+    	two_tuple range = getSize(opponent_shapes, 11);
+    	int longLeg = Math.max(range.range_i, range.range_j);
+    	if (longLeg >= 9) return 5 - (11-longLeg);
+    	else return Math.min(range.range_i, range.range_j);
+    }
+    
+    
+    public static Move getDefenseIndex(Dough dough, Shape[] shapes, Shape[] opponent_shapes ) {
 
         Shape[] rotations = shapes[0].rotations();
         Shape s = rotations[2];
+        
 
-        int gapOffset = 5;
+        int gapOffset = getGapOffset(opponent_shapes);
+        boolean flag4 = gapOffset == 4 ? true : false;
 
         // ---------- diagonal queue ----------
-        Move firstQueue =  eachQueueMove(dough, s, gapOffset, 44);
+        Move firstQueue =  eachQueueMove(dough, s, gapOffset, 44, 1, false);
         if (firstQueue != null) return firstQueue;
 
         // ---------- 2nd to diagonal queue ----------
-        Move secondLeftQueue = eachQueueMove(dough, s, gapOffset, 33);
+        Move secondLeftQueue = eachQueueMove(dough, s, gapOffset, 33, 2, flag4);
         if (secondLeftQueue != null) return secondLeftQueue;
-        Move secondRightQueue = eachQueueMove(dough, s,  gapOffset, 55);
+        Move secondRightQueue = eachQueueMove(dough, s,  gapOffset, 55, 2, flag4);
         if (secondRightQueue != null) return secondRightQueue;
 
         // ---------- 3rd to diagonal queue ----------
-        Move thirdLeftQueue = eachQueueMove(dough, s,  gapOffset, 22);
+        Move thirdLeftQueue = eachQueueMove(dough, s,  gapOffset, 22, 3, flag4);
         if (thirdLeftQueue != null) return thirdLeftQueue;
-        Move thirdRightQueue = eachQueueMove(dough, s,  gapOffset, 66);
+        Move thirdRightQueue = eachQueueMove(dough, s,  gapOffset, 66, 3, flag4);
         if (thirdRightQueue != null) return thirdRightQueue;
 
         // ---------- 4th to diagonal queue ----------
-        Move fourthLeftQueue = eachQueueMove(dough, s,  gapOffset, 11);
+        Move fourthLeftQueue = eachQueueMove(dough, s,  gapOffset, 11, 4, flag4);
         if (fourthLeftQueue != null) return fourthLeftQueue;
-        Move fourthRightQueue = eachQueueMove(dough, s,  gapOffset, 77);
+        Move fourthRightQueue = eachQueueMove(dough, s,  gapOffset, 77, 4, flag4);
         if (fourthRightQueue != null) return fourthRightQueue;
 
         System.out.println("No defensive move found.");
