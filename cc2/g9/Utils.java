@@ -10,20 +10,6 @@ import java.util.*;
 public class Utils {
     public Utils() {
     }
-    // public static Boolean isComplement(ArrayList<Move> past11Moves, Move curMove){
-    // 	for(int i=0; i<past11Moves.size(); i++){
-    // 		Move pastMove = past11Moves.get(i);
-    // 		if(pastMove.rotation != curMove.rotation && distance(pastMove.point, curMove.point) >=7 ){
-    // 			// return true;
-    // 		}
-    // 	}
-    // 	return false;
-    // }
-    
-    
-    public static double distance(Point a, Point b){
-    	return Math.sqrt(Math.pow(a.i - b.i, 2) + Math.pow(a.j - b.j, 2)); 
-    }
     public static Move eachQueueMove(Dough dough, Shape s, int gapOffset, int colOffset, int row, boolean flag4 ) {
         // ---------- diagonal queue ----------
     	int i = 0;
@@ -44,6 +30,23 @@ public class Utils {
                 if (dough.cuts(s, thisPt)){
                     // System.out.println("Wow we found a defensive move!" + thisMv);
                     return thisMv;
+                }
+            }
+        }
+        return null;
+    }
+    public static Move fillInQueueMove(Dough dough, Shape s) {
+        int[] colOffsets = {44, 33, 55, 22, 66, 11, 77};
+        for (int colOffset : colOffsets) {
+            for (int i = 0; i <= dough.side(); i+= 1) {
+                int j = (-1)*i + colOffset;
+                if (j >=0) {
+                    Point thisPt = new Point(i, j);
+                    Move thisMv = new Move(0, 2, thisPt);
+                    if (dough.cuts(s, thisPt)){
+                        // System.out.println("Wow we found a perfect fill in!" + thisMv);
+                        return thisMv;
+                    } 
                 }
             }
         }
@@ -110,6 +113,11 @@ public class Utils {
         if (fourthLeftQueue != null) return fourthLeftQueue;
         Move fourthRightQueue = eachQueueMove(dough, s,  gapOffset, 77, 4, flag4);
         if (fourthRightQueue != null) return fourthRightQueue;
+
+
+        // ---------- filling in each queue ----------
+        Move fillGap = fillInQueueMove(dough, s);
+        if (fillGap != null) return fillGap;
 
         System.out.println("No defensive move found.");
         return null;
