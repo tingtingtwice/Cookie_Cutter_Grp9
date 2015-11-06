@@ -12,7 +12,7 @@ public class Utils {
     }
     public static Move eachQueueMove(Dough dough, Shape s, int gapOffset, int colOffset, int row, boolean flag4 ) {
         // ---------- diagonal queue ----------
-    	int i = 0;
+    	int i = gapOffset-1;
     	if(flag4)
     	{
     		switch(row)
@@ -37,16 +37,20 @@ public class Utils {
     }
     public static Move fillInQueueMove(Dough dough, Shape s) {
         int[] colOffsets = {44, 33, 55, 22, 66, 11, 77};
-        for (int colOffset : colOffsets) {
-            for (int i = 0; i <= dough.side(); i+= 1) {
-                int j = (-1)*i + colOffset;
-                if (j >=0) {
-                    Point thisPt = new Point(i, j);
-                    Move thisMv = new Move(0, 2, thisPt);
-                    if (dough.cuts(s, thisPt)){
-                        // System.out.println("Wow we found a perfect fill in!" + thisMv);
-                        return thisMv;
-                    } 
+        int[] densityOffsets = {3, 2, 1};
+        
+        for ( int densityOffset : densityOffsets) {
+            for (int colOffset : colOffsets) {
+                for (int i = 0; i <= dough.side(); i+= densityOffset) {
+                    int j = (-1)*i + colOffset;
+                    if (j >=0) {
+                        Point thisPt = new Point(i, j);
+                        Move thisMv = new Move(0, 2, thisPt);
+                        if (dough.cuts(s, thisPt)){
+                            // System.out.println("Wow we found a perfect fill in!" + thisMv);
+                            return thisMv;
+                        } 
+                    }
                 }
             }
         }

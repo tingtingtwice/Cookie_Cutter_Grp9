@@ -187,6 +187,7 @@ public class Player implements cc2.sim.Player {
 		// return a cut randomly
 		if(moves11.size()>0){
 			if(false){
+				// Square Strategy
 				int returnIndex = find11SpotCornerStrategy(dough, moves11, shapes);
 				//System.out.println(returnIndex);
 				if(returnIndex >= 0){
@@ -195,6 +196,7 @@ public class Player implements cc2.sim.Player {
 
 			}			
 			else {
+				// Defense Strategy
 				Move defenseMv = Utils.getDefenseIndex(dough, shapes, opponent_shapes);
 				if (defenseMv != null)
 				{
