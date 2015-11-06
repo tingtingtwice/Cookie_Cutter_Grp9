@@ -4,6 +4,7 @@ import cc2.sim.Point;
 import cc2.sim.Shape;
 import cc2.sim.Dough;
 import cc2.sim.Move;
+import cc2.g9.Utils;
 
 import java.util.*;
 import static java.lang.Math.*;
@@ -22,34 +23,21 @@ public class Player implements cc2.sim.Player {
 	
 	
 	
+	
 	public boolean decideStrategy(Shape[] opponent_shapes)
 	{
-		int range_i, range_j, min_i, max_i, min_j, max_j;
-		min_i = 10000; min_j = 10000;
-		max_i = -1; max_j = -1;
-		for (Shape s : opponent_shapes)
-			if (s.size() == 11)
-			{
-				for (Point p : s)
-				{
-					if (p.i > max_i) max_i = p.i;
-					if (p.i < min_i) min_i = p.i;
-					if (p.j > max_j) max_j = p.j;
-					if (p.j < min_j) min_j = p.j;
-				}
-			}
-		range_i = max_i - min_i + 1;
-		range_j = max_j - min_j + 1;
+		two_tuple range = Utils.getSize(opponent_shapes, 11);
+		
 		// the square shape (1st chose)
 		if (firstTry11 == 1)
 		{
 			// if (range_i <= 4 && range_j <= 4) return true;
-			if (range_i <= 5 && range_j <= 5) return true;
+			if (range.range_i <= 5 && range.range_j <= 5) return true;
 			else return false;
 		}
 		else
 		{
-			if ((range_i <= 5 && range_j <= 4) || (range_i <= 4 && range_j <= 5)) return true;
+			if ((range.range_i <= 5 && range.range_j <= 4) || (range.range_i <= 4 && range.range_j <= 5)) return true;
 			else return false;
 		}
 		
@@ -207,8 +195,11 @@ public class Player implements cc2.sim.Player {
 
 			}			
 			else {
-				Move defenseMv = Utils.getDefenseIndex(dough, shapes);
-				if (defenseMv != null) return defenseMv;
+				Move defenseMv = Utils.getDefenseIndex(dough, shapes, opponent_shapes);
+				if (defenseMv != null)
+				{
+					return defenseMv;
+				}
 			}
 			Move thisMv = moves11.get(gen.nextInt(moves11.size()));
 			// System.out.println("Just moved shape, rotation, point: " + thisMv.shape + ", " + thisMv.rotation + ", " + thisMv.point);
