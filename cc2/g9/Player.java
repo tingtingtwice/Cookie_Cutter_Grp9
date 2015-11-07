@@ -21,7 +21,8 @@ public class Player implements cc2.sim.Player {
 
 	private boolean defensive = false;
 	
-	
+	public boolean board[][] = null;
+	public Point lastOppPlay;
 	
 	
 	public boolean decideStrategy(Shape[] opponent_shapes)
@@ -123,9 +124,21 @@ public class Player implements cc2.sim.Player {
 		{
 			if (firstTry5 == 0) {
 				// save cutter length to check for retries
+				
+				Point[] counterShape = getCounterTo4x4Square(opponent_shapes);
+				System.out.println(counterShape );
+				
+				if(counterShape != null){
+					cutter = counterShape;
+				}
+				else{
+					for (int i = 0 ; i != cutter.length ; ++i)
+						cutter[i] = new Point(i, 0);
+					
+				}
+
 				row_2 = new boolean [cutter.length - 1];
-				for (int i = 0 ; i != cutter.length ; ++i)
-					cutter[i] = new Point(i, 0);
+
 				firstTry5++;
 			} else {
 				// pick a random cell from 2nd row but not same
@@ -135,16 +148,34 @@ public class Player implements cc2.sim.Player {
 				} while (row_2[i]);
 				row_2[i] = true;
 				cutter[cutter.length - 1] = new Point(i, 1);
-				for (i = 0 ; i != cutter.length - 1 ; ++i)
+				System.out.println("Is same cutter?");
+				System.out.println(cutter[cutter.length - 1].i + ", " + cutter[cutter.length - 1].j );
+				
+				for (i = 0 ; i != cutter.length - 1 ; ++i){
 					cutter[i] = new Point(i, 0);
+					
+					System.out.println(cutter[i].i + ", " + cutter[i].j );
+				}
 				firstTry5++;
+				
 			}
 		}
+		System.out.println();
+		for (int i = 0 ; i != cutter.length ; ++i){
+			System.out.println(cutter[i].i + ", " + cutter[i].j );
+		}
+		System.out.println();
+
 		return new Shape(cutter);
 	}
 
 	public Move cut(Dough dough, Shape[] shapes, Shape[] opponent_shapes)
-	{
+	{		
+		Move returnMove = null;
+		if(board == null){
+			board = new boolean[dough.side()][dough.side()];
+		}
+		lastOppPlay = getLastOppPlay(dough);
 		defensive = decideStrategy(opponent_shapes);
 		// prune larger shapes if initial move
 		if (dough.uncut()) {
@@ -189,30 +220,39 @@ public class Player implements cc2.sim.Player {
 			if(false){
 				// Square Strategy
 				int returnIndex = find11SpotCornerStrategy(dough, moves11, shapes);
-				//System.out.println(returnIndex);
 				if(returnIndex >= 0){
-					return moves11.get(returnIndex);				
+					returnMove = moves11.get(returnIndex);				
 				}
 
 			}			
 			else {
 				// Defense Strategy
-				Move defenseMv = Utils.getDefenseIndex(dough, shapes, opponent_shapes);
+
+				Move defenseMv = Utils.getDefenseIndex(dough, shapes, opponent_shapes, lastOppPlay);
 				if (defenseMv != null)
 				{
-					return defenseMv;
+					System.out.println("Defense Strategy");
+					returnMove = defenseMv;
 				}
 			}
-			Move thisMv = moves11.get(gen.nextInt(moves11.size()));
-			// System.out.println("Just moved shape, rotation, point: " + thisMv.shape + ", " + thisMv.rotation + ", " + thisMv.point);
-			return thisMv;
+			if(returnMove == null){
+				Move thisMv = moves11.get(gen.nextInt(moves11.size()));
+				// System.out.println("Just moved shape, rotation, point: " + thisMv.shape + ", " + thisMv.rotation + ", " + thisMv.point);
+				returnMove = thisMv;				
+			}
 		}
 		else if(moves8.size()>0){
-			return moves8.get(gen.nextInt(moves8.size()));
+			returnMove = moves8.get(gen.nextInt(moves8.size()));
 		}
 		else {
-			return moves5.get(gen.nextInt(moves5.size()));
+			returnMove = moves5.get(gen.nextInt(moves5.size()));
 		}
+		
+		if(returnMove != null){
+			updateBoardMyMove(shapes, returnMove);
+		}
+		
+		return returnMove;
 	}
 	
 	public int find11SpotCornerStrategy(Dough dough, ArrayList<Move> moves11, Shape[] shapes){
@@ -379,5 +419,89 @@ public class Player implements cc2.sim.Player {
 		
 		return corners;
 	}
+
+	public Point[] getCounterTo4x4Square(Shape[] opponent_shapes){
+		Shape opp11 = null;
+		for(int i = 0; i<opponent_shapes.length; i++){
+			if(opponent_shapes[i].size() == 11){
+				opp11 = opponent_shapes[i];
+				break;
+			}
+		}
+		if(opp11 == null){
+			return null;
+		}
+		
+		int minI = Integer.MAX_VALUE;
+		int maxI = Integer.MIN_VALUE;
+		int minJ = Integer.MAX_VALUE;
+		int maxJ = Integer.MIN_VALUE;
+		
+		for (Point p : opp11){
+			if(p.i < minI)
+				minI = p.i;
+			if(p.i > maxI)
+				maxI = p.i;
+			if(p.j < minJ)
+				minJ = p.j;
+			if(p.j > maxJ)
+				maxJ = p.j;
+		}
+		if((maxI - minI == 3 && maxJ - minJ == 3) == false){
+			return null;
+		}
+		System.out.println("IS MATCH");
+		
+		boolean[][] box = new boolean[4][4];
+		for(int i = 0; i < 4; i++){
+			for(int j = 0; j < 4; j++){
+				Point curr = new Point(i+minI, j+minJ);
+				for (Point p : opp11){
+					if(curr.equals(p)){
+						box[i][j] = true;
+						break;
+					}
+				}
+			}
+		}
+		
+		Point[] counterShape = new Point[5];
+		int index = 0;
+
+		for(int i = 0; i< 4; i++){
+			for(int j = 0; j < 4; j++){
+				if(box[i][j] == false){
+					System.out.println("Add: " + i + ", " + j);
+
+					counterShape[index] = new Point(i+minI, j+minJ);
+					index++;
+				}
+			}
+		}
+				
+		return counterShape;
+	}
 	
+	// Updates board and returns location of a single point from opponent's last move
+	public Point getLastOppPlay(Dough dough){
+		Point oppMove = null;
+		for(int i = 0; i < dough.side(); i++){
+			for(int j = 0; j < dough.side(); j++){
+				if(board[i][j] == false && dough.uncut(i,j) == false){
+					oppMove = new Point(i,j);
+					board[i][j] = true;
+				}
+			}
+		}
+		
+		// if opponent didn't move last move, return null
+		return oppMove;
+	}
+	
+	public void updateBoardMyMove(Shape[] shapes, Move myMove){
+		for (Point p : shapes[myMove.shape]){
+			board[p.i][p.j] = true;
+		}
+	}
+
 }

@@ -6,6 +6,7 @@ import cc2.sim.Dough;
 import cc2.sim.Move;
 
 import java.util.*;
+import java.lang.*;
 
 public class Utils {
     public Utils() {
@@ -87,7 +88,7 @@ public class Utils {
     }
     
     
-    public static Move getDefenseIndex(Dough dough, Shape[] shapes, Shape[] opponent_shapes ) {
+    public static Move getDefenseIndex(Dough dough, Shape[] shapes, Shape[] opponent_shapes, Point lastOppMove) {
 
         Shape[] rotations = shapes[0].rotations();
         Shape s = rotations[2];
@@ -95,30 +96,54 @@ public class Utils {
 
         int gapOffset = getGapOffset(opponent_shapes);
         boolean flag4 = gapOffset == 4 ? true : false;
-
+        
+        ArrayList<Move> queueMoves = new ArrayList<Move>();
+        
+        
         // ---------- diagonal queue ----------
         Move firstQueue =  eachQueueMove(dough, s, gapOffset, 44, 1, false);
-        if (firstQueue != null) return firstQueue;
+        if (firstQueue != null) queueMoves.add(firstQueue);
 
         // ---------- 2nd to diagonal queue ----------
         Move secondLeftQueue = eachQueueMove(dough, s, gapOffset, 33, 2, flag4);
-        if (secondLeftQueue != null) return secondLeftQueue;
+        if (secondLeftQueue != null) queueMoves.add(secondLeftQueue);
         Move secondRightQueue = eachQueueMove(dough, s,  gapOffset, 55, 2, flag4);
-        if (secondRightQueue != null) return secondRightQueue;
+        if (secondRightQueue != null) queueMoves.add(secondRightQueue);
 
         // ---------- 3rd to diagonal queue ----------
         Move thirdLeftQueue = eachQueueMove(dough, s,  gapOffset, 22, 3, flag4);
-        if (thirdLeftQueue != null) return thirdLeftQueue;
+        if (thirdLeftQueue != null) queueMoves.add(thirdLeftQueue);
         Move thirdRightQueue = eachQueueMove(dough, s,  gapOffset, 66, 3, flag4);
-        if (thirdRightQueue != null) return thirdRightQueue;
+        if (thirdRightQueue != null) queueMoves.add(thirdRightQueue);
 
         // ---------- 4th to diagonal queue ----------
         Move fourthLeftQueue = eachQueueMove(dough, s,  gapOffset, 11, 4, flag4);
-        if (fourthLeftQueue != null) return fourthLeftQueue;
+        if (fourthLeftQueue != null) queueMoves.add(fourthLeftQueue);
         Move fourthRightQueue = eachQueueMove(dough, s,  gapOffset, 77, 4, flag4);
-        if (fourthRightQueue != null) return fourthRightQueue;
+        if (fourthRightQueue != null) queueMoves.add(fourthRightQueue);
 
-
+        if(queueMoves.size() > 0){
+        	if(lastOppMove == null){
+                System.out.println("Opp move null");
+            	return queueMoves.get(0);
+        		
+        	}
+            Point placePoint;
+            int minDistIndex = 0;
+            float minDist = getDistBetweenPoints(lastOppMove, queueMoves.get(0).point);
+            float dist;
+        	for(int i = 0; i< queueMoves.size(); i++){
+        		placePoint = queueMoves.get(i).point;
+        		dist = getDistBetweenPoints(lastOppMove, placePoint);
+        		if(dist < minDist){
+        			minDist = dist;
+        			minDistIndex = i;
+        		}
+        	}
+            System.out.println(minDistIndex);
+        	return queueMoves.get(minDistIndex);
+        }
+        
         // ---------- filling in each queue ----------
         Move fillGap = fillInQueueMove(dough, s);
         if (fillGap != null) return fillGap;
@@ -127,4 +152,7 @@ public class Utils {
         return null;
     }
 
+    public static float getDistBetweenPoints(Point a, Point b){
+    	return (float)Math.sqrt(Math.pow(a.j-b.j,2) + Math.pow(a.i-b.i,2));
+    }
 }
