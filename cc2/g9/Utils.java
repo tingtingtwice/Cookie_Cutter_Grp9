@@ -98,9 +98,22 @@ public class Utils {
         {
         	int side = 6 + gap;
         	Dough smallDough = new Dough(side);
+        	int length = 2 * (side - 2*gap) - 1;
+        	if(length>0)
+        	{
+        		Point[] smallCutter = new Point [length];
+            	for(int i=0; i<length; i++)
+            	{
+            		if(i <= side - 2*gap - 1) smallCutter[i] = new Point(0, i);
+            		else smallCutter[i] = new Point(i - (side - 2*gap - 1), side - 2*gap - 1);
+            	}
+            	Shape smallShape = new Shape(smallCutter);
+            	if(smallCutter != null) smallDough.cut(smallShape, new Point(2*gap, 0));
+        	}
         	boolean cutFlag = false;
         	smallDough.cut(s, new Point(0,side-6));
             smallDough.cut(s, new Point(side-6,0));
+            
             loop:
             for(int i=0; i<side; i++)
             	for(int j=0; j<side; j++)
