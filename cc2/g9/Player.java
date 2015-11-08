@@ -91,7 +91,7 @@ public class Player implements cc2.sim.Player {
 			{
 				for(int i=0; i<length; i++)
 					if (i<4) cutter[i] = new Point(i,0);
-					else cutter[i] = new Point(i-4,1);
+					else cutter[i] = new Point(i-3,1);
 				firstTry8++;
 			}
 			else
