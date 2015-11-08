@@ -79,12 +79,41 @@ public class Utils {
 		return new two_tuple(range_i, range_j);
     }
     
-    public static int getGapOffset(Shape[] opponent_shapes)
+    public static int getGapOffset(Shape[] shapes, Shape[] opponent_shapes)
     {
+    	/*
     	two_tuple range = getSize(opponent_shapes, 11);
     	int longLeg = Math.max(range.range_i, range.range_j);
     	if (longLeg >= 9) return 5 - (11-longLeg);
     	else return Math.min(range.range_i, range.range_j);
+    	*/
+    	
+    	int gap = 6;
+    	
+    	Shape[] rotations = shapes[0].rotations();
+    	Shape[] op_rotations = opponent_shapes[0].rotations();
+        Shape s = rotations[2];
+        
+        while(gap>0)
+        {
+        	int side = 6 + gap;
+        	Dough smallDough = new Dough(side);
+        	boolean cutFlag = false;
+        	smallDough.cut(s, new Point(0,side-6));
+            smallDough.cut(s, new Point(side-6,0));
+            loop:
+            for(int i=0; i<side; i++)
+            	for(int j=0; j<side; j++)
+            		for(Shape os_s : op_rotations)
+            			if(smallDough.cuts(os_s, new Point(i,j)))
+                    	{
+                    		gap--;
+                    		cutFlag = true;
+                    		break loop;
+                    	}
+            if(!cutFlag) return gap;
+        }
+        return 1;
     }
     
     
@@ -93,8 +122,8 @@ public class Utils {
         Shape[] rotations = shapes[0].rotations();
         Shape s = rotations[2];
         
-
-        int gapOffset = getGapOffset(opponent_shapes);
+        
+        int gapOffset = getGapOffset(shapes, opponent_shapes);
         boolean flag4 = gapOffset == 4 ? true : false;
         
         ArrayList<Move> queueMoves = new ArrayList<Move>();
