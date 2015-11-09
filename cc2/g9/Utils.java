@@ -36,8 +36,9 @@ public class Utils {
         return null;
     }
     public static Move fillInQueueMove(Dough dough, Shape[] shapes) {
-        Shape shapeZero= shapes[0];
-        Shape[] rotations = shapeZero.rotations();
+        System.out.println("size of shapes" + shapes.length);
+        System.out.println("size of shapes rotation" + shapes[0].rotations().length);
+        Shape[] rotations = shapes[0].rotations();
         Shape s = rotations[2];
         int[] colOffsets = {44, 33, 55, 22, 66, 11, 77};
         int[] densityOffsets = {4, 3, 2, 1};

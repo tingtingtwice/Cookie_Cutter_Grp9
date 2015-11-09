@@ -194,6 +194,7 @@ public class Player implements cc2.sim.Player {
 		ArrayList <Move> moves11 = new ArrayList <Move> ();
 		ArrayList <Move> moves8 = new ArrayList <Move> ();
 		ArrayList <Move> moves5 = new ArrayList <Move> ();
+		ArrayList <Move> moves = new ArrayList <Move> ();
 		for (int i = 0 ; i != dough.side() ; ++i)
 			for (int j = 0 ; j != dough.side() ; ++j) {
 				Point p = new Point(i, j);
@@ -205,7 +206,7 @@ public class Player implements cc2.sim.Player {
 						Shape s = rotations[ri];
 						if (dough.cuts(s, p)){
 							// System.out.println("This shape is not in saved Points.");
-							if(shapes[si].size() == 11 && !Utils.inSavedPoints(s, p, savedPoints)){
+							if(shapes[si].size() == 11&& !Utils.inSavedPoints(s, p, savedPoints)){
 								moves11.add(new Move(si,ri,p));
 							}
 							else if(shapes[si].size() == 8){
@@ -214,6 +215,7 @@ public class Player implements cc2.sim.Player {
 							else if(shapes[si].size() == 5){
 								moves5.add(new Move(si,ri,p));
 							}
+							moves.add(new Move(si,ri,p));
 						}
 					}
 				}
@@ -241,8 +243,10 @@ public class Player implements cc2.sim.Player {
 				returnMove = moves8.get(gen.nextInt(moves8.size()));	
 			}
 		}
-		else {
+		else if (moves5.size()>0){
 			returnMove = moves5.get(gen.nextInt(moves5.size()));
+		} else {
+			returnMove = moves.get(gen.nextInt(moves.size()));
 		}
 		
 		if(returnMove != null){
