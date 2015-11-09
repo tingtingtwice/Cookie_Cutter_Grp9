@@ -23,6 +23,9 @@ public class Player implements cc2.sim.Player {
 	
 	public boolean board[][] = null;
 	public Point lastOppPlay;
+
+	public ArrayList <Move> prevDefMoves = new ArrayList <Move> ();
+	public ArrayList <Point> savedPoints = new ArrayList <Point> ();
 	
 	
 	public boolean decideStrategy(Shape[] opponent_shapes)
@@ -126,7 +129,7 @@ public class Player implements cc2.sim.Player {
 				// save cutter length to check for retries
 				
 				Point[] counterShape = getCounterTo4x4Square(opponent_shapes);
-				System.out.println(counterShape );
+				// System.out.println(counterShape );
 				
 				if(counterShape != null){
 					cutter = counterShape;
@@ -188,7 +191,6 @@ public class Player implements cc2.sim.Player {
 					shapes[s] = null;
 		}
 		// find all valid cuts
-		ArrayList <Move> moves = new ArrayList <Move> ();
 		ArrayList <Move> moves11 = new ArrayList <Move> ();
 		ArrayList <Move> moves8 = new ArrayList <Move> ();
 		ArrayList <Move> moves5 = new ArrayList <Move> ();
@@ -202,13 +204,14 @@ public class Player implements cc2.sim.Player {
 					for (int ri = 0 ; ri != rotations.length ; ++ri) {
 						Shape s = rotations[ri];
 						if (dough.cuts(s, p)){
-							if(shapes[si].size() == 11 && (ri == 0 || ri == 2)){
+							// System.out.println("This shape is not in saved Points.");
+							if(shapes[si].size() == 11 && !Utils.inSavedPoints(s, p, savedPoints)){
 								moves11.add(new Move(si,ri,p));
 							}
 							else if(shapes[si].size() == 8){
 								moves8.add(new Move(si,ri,p));
 							}
-							else{
+							else if(shapes[si].size() == 5){
 								moves5.add(new Move(si,ri,p));
 							}
 						}
@@ -217,32 +220,26 @@ public class Player implements cc2.sim.Player {
 			}
 		// return a cut randomly
 		if(moves11.size()>0){
-			if(false){
-				// Square Strategy
-				int returnIndex = find11SpotCornerStrategy(dough, moves11, shapes);
-				if(returnIndex >= 0){
-					returnMove = moves11.get(returnIndex);				
-				}
+			int gapOffset = Utils.getGapOffset(shapes, opponent_shapes);
+			Move defenseMv = Utils.getDefenseIndex(dough, shapes, opponent_shapes, lastOppPlay);
 
-			}			
-			else {
-				// Defense Strategy
-
-				Move defenseMv = Utils.getDefenseIndex(dough, shapes, opponent_shapes, lastOppPlay);
-				if (defenseMv != null)
-				{
-					System.out.println("Defense Strategy");
-					returnMove = defenseMv;
-				}
-			}
-			if(returnMove == null){
+			if (defenseMv != null)
+			{
+				// if current defense move is next to previous, save in between moves for later.
+				savedPoints = Utils.savePointsForLater(defenseMv, prevDefMoves, savedPoints, gapOffset, dough, shapes[0]);
+				prevDefMoves.add(defenseMv);
+				returnMove = defenseMv;
+			} else {
 				Move thisMv = moves11.get(gen.nextInt(moves11.size()));
-				// System.out.println("Just moved shape, rotation, point: " + thisMv.shape + ", " + thisMv.rotation + ", " + thisMv.point);
-				returnMove = thisMv;				
+				returnMove = thisMv;
 			}
-		}
-		else if(moves8.size()>0){
-			returnMove = moves8.get(gen.nextInt(moves8.size()));
+		} else if (moves8.size()>0) {
+			Move fillInMv = Utils.fillInQueueMove(dough, shapes);
+			if ( fillInMv != null ) {
+				returnMove = fillInMv;
+			} else {
+				returnMove = moves8.get(gen.nextInt(moves8.size()));	
+			}
 		}
 		else {
 			returnMove = moves5.get(gen.nextInt(moves5.size()));

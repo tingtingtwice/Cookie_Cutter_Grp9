@@ -12,8 +12,8 @@ public class Utils {
     public Utils() {
     }
     public static Move eachQueueMove(Dough dough, Shape s, int gapOffset, int colOffset, int row, boolean flag4 ) {
-        // ---------- diagonal queue ----------
-    	int i = gapOffset-1;
+        // ---------- diagonal queue ( Reverse Order )----------
+        int i = dough.side() - 1;
     	if(flag4)
     	{
     		switch(row)
@@ -23,32 +23,33 @@ public class Utils {
     		case 4: i = 2;
     		}
     	}
-        for (; i <= dough.side() ; i=i+gapOffset ){
+        for (; i >= 0 ; i=i-gapOffset ){
             int j = (-1)*i + colOffset;
             if (j >= 0){
                 Point thisPt = new Point(i, j);
                 Move thisMv = new Move(0, 2, thisPt);
                 if (dough.cuts(s, thisPt)){
-                    // System.out.println("Wow we found a defensive move!" + thisMv);
                     return thisMv;
                 }
             }
         }
         return null;
     }
-    public static Move fillInQueueMove(Dough dough, Shape s) {
+    public static Move fillInQueueMove(Dough dough, Shape[] shapes) {
+        Shape shapeZero= shapes[0];
+        Shape[] rotations = shapeZero.rotations();
+        Shape s = rotations[2];
         int[] colOffsets = {44, 33, 55, 22, 66, 11, 77};
-        int[] densityOffsets = {3, 2, 1};
-        
-        for ( int densityOffset : densityOffsets) {
+        int[] densityOffsets = {4, 3, 2, 1};
+
+        for (int densityOffset : densityOffsets) {
             for (int colOffset : colOffsets) {
-                for (int i = 0; i <= dough.side(); i+= densityOffset) {
+                for (int i = 1; i < dough.side(); i = i + densityOffset) {
                     int j = (-1)*i + colOffset;
                     if (j >=0) {
                         Point thisPt = new Point(i, j);
                         Move thisMv = new Move(0, 2, thisPt);
                         if (dough.cuts(s, thisPt)){
-                            // System.out.println("Wow we found a perfect fill in!" + thisMv);
                             return thisMv;
                         } 
                     }
@@ -56,6 +57,35 @@ public class Utils {
             }
         }
         return null;
+    }
+    public static ArrayList<Point> savePointsForLater(Move defenseMv, ArrayList<Move> prevDefMoves, ArrayList<Point> savedPoints, int gapOffset, Dough dough, Shape shape) {
+        Point curPt = defenseMv.point;
+        if (curPt.i + gapOffset < dough.side() && curPt.j - gapOffset >0 ) {
+            Point targetPt = new Point(curPt.i + gapOffset, curPt.j - gapOffset);
+            for (Move thisMv: prevDefMoves) {
+                if ( thisMv.point.i == targetPt.i && thisMv.point.j == targetPt.j) {
+                    // System.out.println(" =============== we found a match! ===============");
+                    for (int i = 1; i < gapOffset; i++) {
+                        for (Point p: shape) {
+                            Point toBeAdded = new Point( p.i + curPt.i + i, p.j + curPt.j -i);
+                            savedPoints.add(toBeAdded);
+                        }
+                    }
+                    break; 
+                }
+            } 
+        }
+        return savedPoints;
+    }
+    public static boolean inSavedPoints(Shape shape, Point q, ArrayList<Point> savedPoints) {
+        for ( Point thisSavedPt: savedPoints) {
+            for ( Point p : shape) {
+                if ((p.i + q.i) == thisSavedPt.i && (p.j + q.j) == thisSavedPt.j){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     public static two_tuple getSize(Shape[] shapes, int size)
@@ -166,7 +196,7 @@ public class Utils {
 
         if(queueMoves.size() > 0){
         	if(lastOppMove == null){
-                System.out.println("Opp move null");
+                // System.out.println("Opp move null");
             	return queueMoves.get(0);
         		
         	}
@@ -182,15 +212,15 @@ public class Utils {
         			minDistIndex = i;
         		}
         	}
-            System.out.println(minDistIndex);
+            // System.out.println(minDistIndex);
         	return queueMoves.get(minDistIndex);
         }
         
         // ---------- filling in each queue ----------
-        Move fillGap = fillInQueueMove(dough, s);
-        if (fillGap != null) return fillGap;
+        // Move fillGap = fillInQueueMove(dough, s);
+        // if (fillGap != null) return fillGap;
 
-        System.out.println("No defensive move found.");
+        // System.out.println("No defensive move found.");
         return null;
     }
 
