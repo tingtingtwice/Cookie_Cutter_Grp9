@@ -180,10 +180,12 @@ public class Player implements cc2.sim.Player {
 
 	public Move cut(Dough dough, Shape[] shapes, Shape[] opponent_shapes)
 	{	
-		if (dough.countCut() ==0 ) {
+		if (dough.countCut() ==0) {
 			Point startPt = new Point(45, 0);
 			Move startMv = new Move(2, 0, startPt);
-			return startMv;
+			if (dough.cuts(shapes[2].rotations()[0], startPt)){
+				return startMv;
+			} 
 		}
 		Move returnMove = null;
 		if(board == null){
