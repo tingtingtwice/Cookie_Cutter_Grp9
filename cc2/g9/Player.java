@@ -143,29 +143,35 @@ public class Player implements cc2.sim.Player {
 				row_2 = new boolean [cutter.length - 1];
 
 				firstTry5++;
-			} else {
-				// pick a random cell from 2nd row but not same
-				int i;
-				do {
-					i = gen.nextInt(cutter.length - 1);
-				} while (row_2[i]);
-				row_2[i] = true;
-				cutter[cutter.length - 1] = new Point(i, 1);
-				System.out.println("Is same cutter?");
-				System.out.println(cutter[cutter.length - 1].i + ", " + cutter[cutter.length - 1].j );
+			} else if (firstTry5 == 1 ) {
 				
-				for (i = 0 ; i != cutter.length - 1 ; ++i){
+				cutter[cutter.length - 1] = new Point(0, 1);
+				// System.out.println("Is same cutter?");
+				// System.out.println(cutter[cutter.length - 1].i + ", " + cutter[cutter.length - 1].j );
+				
+				for (int i = 0 ; i != cutter.length - 1 ; ++i){
 					cutter[i] = new Point(i, 0);
 					
-					System.out.println(cutter[i].i + ", " + cutter[i].j );
+					// System.out.println(cutter[i].i + ", " + cutter[i].j );
 				}
 				firstTry5++;
+			} else {
 				
+				cutter[cutter.length - 1] = new Point(3, 1);
+				// System.out.println("Is same cutter?");
+				// System.out.println(cutter[cutter.length - 1].i + ", " + cutter[cutter.length - 1].j );
+				
+				for (int i = 0 ; i != cutter.length - 1 ; ++i){
+					cutter[i] = new Point(i, 0);
+					
+					// System.out.println(cutter[i].i + ", " + cutter[i].j );
+				}
+				firstTry5++;
 			}
 		}
 		System.out.println();
 		for (int i = 0 ; i != cutter.length ; ++i){
-			System.out.println(cutter[i].i + ", " + cutter[i].j );
+			// System.out.println(cutter[i].i + ", " + cutter[i].j );
 		}
 		System.out.println();
 
@@ -174,8 +180,8 @@ public class Player implements cc2.sim.Player {
 
 	public Move cut(Dough dough, Shape[] shapes, Shape[] opponent_shapes)
 	{	
-		if (dough.countCut() ==0) {
-			Point startPt = new Point(46, 0);
+		if (dough.countCut() ==0 ) {
+			Point startPt = new Point(45, 0);
 			Move startMv = new Move(2, 0, startPt);
 			return startMv;
 		}
