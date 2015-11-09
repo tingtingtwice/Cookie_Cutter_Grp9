@@ -173,7 +173,12 @@ public class Player implements cc2.sim.Player {
 	}
 
 	public Move cut(Dough dough, Shape[] shapes, Shape[] opponent_shapes)
-	{		
+	{	
+		if (dough.countCut() ==0) {
+			Point startPt = new Point(46, 0);
+			Move startMv = new Move(2, 0, startPt);
+			return startMv;
+		}
 		Move returnMove = null;
 		if(board == null){
 			board = new boolean[dough.side()][dough.side()];
