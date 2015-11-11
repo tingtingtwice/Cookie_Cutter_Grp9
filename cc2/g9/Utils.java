@@ -31,13 +31,15 @@ public class Utils {
                 if (dough.cuts(s, thisPt)){
                     return thisMv;
                 } 
-                else if (i-1 > 0 && j-1 > 0 && i+1 <45 && j+1 < 45 ) {
+                else if (i-2 > 0 && j-2 > 0 && i+2 <dough.side() && j+2 < dough.side() ) {
+                    // if can not put in queue, and it's because of opponent's blocking, then look for neighboring +- 2 positions. 
                     Boolean isPrevMove = false;
                     for(Move prevMv: prevDefMoves){
                         if (prevMv.point.i == i && prevMv.point.j ==j ) {
                             isPrevMove = true;
                         }
                     }
+                    // check if we have placed at this queue position already
                     if ( isPrevMove == false){
                         Point topPt = new Point(i-1, j+1);
                         Point bottomPt = new Point(i+1, j-1);
@@ -49,18 +51,15 @@ public class Utils {
                                 isPrevMove2 = true;
                             }
                         }
+                        // check if we have chosen a backup neighboring position already
                         if ( isPrevMove2 == false) {
                             if (dough.cuts(s, topPt)) {
-                                // System.out.println("TOP i, j, k:" + i + ", " + j);
                                 return new Move(0, 2, topPt);
                             }else if (dough.cuts(s, bottomPt)) {
-                                // System.out.println("BOTTOM i, j, k:" + i + ", " + j);
                                 return new Move(0, 2, bottomPt);
                             }else if (dough.cuts(s, top2Pt)) {
-                                // System.out.println("TOP i, j, k:" + i + ", " + j);
                                 return new Move(0, 2, top2Pt);
                             }else if (dough.cuts(s, bottom2Pt)) {
-                                // System.out.println("BOTTOM i, j, k:" + i + ", " + j);
                                 return new Move(0, 2, bottom2Pt);
                             }
                         }
@@ -266,4 +265,6 @@ public class Utils {
     public static float getDistBetweenPoints(Point a, Point b){
     	return (float)Math.sqrt(Math.pow(a.j-b.j,2) + Math.pow(a.i-b.i,2));
     }
+
+
 }

@@ -23,9 +23,11 @@ public class Player implements cc2.sim.Player {
 	
 	public boolean board[][] = null;
 	public Point lastOppPlay;
+	public ArrayList <Point> lastOppPoints;
 
 	public ArrayList <Move> prevDefMoves = new ArrayList <Move> ();
 	public ArrayList <Point> savedPoints = new ArrayList <Point> ();
+	public ArrayList <Point> lastMovePoints;
 	
 	
 	public boolean decideStrategy(Shape[] opponent_shapes)
@@ -180,18 +182,23 @@ public class Player implements cc2.sim.Player {
 
 	public Move cut(Dough dough, Shape[] shapes, Shape[] opponent_shapes)
 	{	
-		if (dough.countCut() ==0) {
-			Point startPt = new Point(45, 0);
-			Move startMv = new Move(2, 0, startPt);
-			if (dough.cuts(shapes[2].rotations()[0], startPt)){
-				return startMv;
-			} 
-		}
+
 		Move returnMove = null;
 		if(board == null){
 			board = new boolean[dough.side()][dough.side()];
 		}
-		lastOppPlay = getLastOppPlay(dough);
+		// if we are playing first, place 5 piece in bottom left corner.
+		if (dough.countCut() ==0) {
+			Point startPt = new Point(45, 0);
+			Move startMv = new Move(2, 0, startPt);
+			if (dough.cuts(shapes[2].rotations()[0], startPt)){
+				lastMovePoints = updateBoardMyMove(shapes, startMv);
+				lastOppPoints = getLastOppPoints(dough);
+				return startMv;
+			} 
+		}
+		// lastOppPlay = getLastOppPlay(dough);
+		
 		defensive = decideStrategy(opponent_shapes);
 		// prune larger shapes if initial move
 		if (dough.uncut()) {
@@ -265,7 +272,10 @@ public class Player implements cc2.sim.Player {
 		}
 		
 		if(returnMove != null){
-			updateBoardMyMove(shapes, returnMove);
+			// must call getLastOppPoints before updateBoardMyMove
+			lastOppPoints = getLastOppPoints(dough);
+			lastMovePoints = updateBoardMyMove(shapes, returnMove);
+			
 		}
 		
 		return returnMove;
@@ -514,10 +524,52 @@ public class Player implements cc2.sim.Player {
 		return oppMove;
 	}
 	
-	public void updateBoardMyMove(Shape[] shapes, Move myMove){
-		for (Point p : shapes[myMove.shape]){
-			board[p.i][p.j] = true;
+	public ArrayList<Point> updateBoardMyMove(Shape[] shapes, Move myMove){
+		ArrayList<Point> lastMovePts = new ArrayList<Point>();
+		for (Point p : shapes[myMove.shape].rotations()[myMove.rotation]){
+			Point newPoint = new Point(p.i + myMove.point.i, p.j + myMove.point.j);
+			board[newPoint.i][newPoint.j] = true;
+			lastMovePts.add(newPoint);
+		}
+		return lastMovePts;
+	}
+
+	public void printAL(ArrayList<Point> ar) {
+    	for(Point p: ar) {
+			System.out.println(" i, j: " + p.i + "," + p.j);
 		}
 	}
+    // Updates board and returns all points from opponent's last move
+    public ArrayList<Point> getLastOppPoints(Dough dough){
+    	// System.out.println("+++++++++++++lastMovePoints length" + lastMovePoints.size());
+    	printAL(lastMovePoints);
+
+    	ArrayList<Point> lastOppPts = new ArrayList<Point>();
+    	// System.out.println("==============lastOppPts length" + lastOppPts.size());
+        for(int i = 0; i < dough.side(); i++){
+            for(int j = 0; j < dough.side(); j++){
+                if(board[i][j] == false && dough.uncut(i,j) == false){
+                	// at this point could be opp or self.
+                		board[i][j] = true;
+                		boolean isOpp = true;
+                		for(Point p: lastMovePoints) {
+                			if(p.i == j && p.j ==i) {
+                				isOpp = false;
+                				break;
+                			}
+                		}
+                		if (isOpp ==true ) {
+                			lastOppPts.add(new Point(i, j));
+                		}
+                }
+            }
+        }
+        // System.out.println("---------------- lastOppPts length" + lastOppPts.size());
+        printAL(lastOppPts);
+        System.out.println("NEXT MOVE.");
+        
+        // if opponent didn't move last move, return null
+        return lastOppPts;
+    }
 
 }
