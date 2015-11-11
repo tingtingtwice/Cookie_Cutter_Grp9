@@ -28,6 +28,7 @@ public class Player implements cc2.sim.Player {
 	public ArrayList <Move> prevDefMoves = new ArrayList <Move> ();
 	public ArrayList <Point> savedPoints = new ArrayList <Point> ();
 	public ArrayList <Point> lastMovePoints;
+	public ArrayList<ArrayList<Point>> oppMoves = new ArrayList<ArrayList<Point>>();
 	
 	
 	public boolean decideStrategy(Shape[] opponent_shapes)
@@ -194,6 +195,7 @@ public class Player implements cc2.sim.Player {
 			if (dough.cuts(shapes[2].rotations()[0], startPt)){
 				lastMovePoints = updateBoardMyMove(shapes, startMv);
 				lastOppPoints = getLastOppPoints(dough);
+				oppMoves.add(lastOppPoints);
 				return startMv;
 			} 
 		}
@@ -253,8 +255,12 @@ public class Player implements cc2.sim.Player {
 				returnMove = defenseMv;
 			} else {
 				// System.exit(0);
+				Move destructor = Utils.getDestructor(shapes, dough, oppMoves, savedPoints);
+				if(destructor != null) returnMove = destructor;
+				else{
 				Move thisMv = moves11.get(gen.nextInt(moves11.size()));
 				returnMove = thisMv;
+				}
 			}
 		} else if (moves8.size()>0) {
 			// System.exit(0);
@@ -274,6 +280,7 @@ public class Player implements cc2.sim.Player {
 		if(returnMove != null){
 			// must call getLastOppPoints before updateBoardMyMove
 			lastOppPoints = getLastOppPoints(dough);
+			oppMoves.add(lastOppPoints);
 			lastMovePoints = updateBoardMyMove(shapes, returnMove);
 			
 		}
@@ -566,7 +573,7 @@ public class Player implements cc2.sim.Player {
         }
         // System.out.println("---------------- lastOppPts length" + lastOppPts.size());
         printAL(lastOppPts);
-        System.out.println("NEXT MOVE.");
+        //System.out.println("NEXT MOVE.");
         
         // if opponent didn't move last move, return null
         return lastOppPts;
