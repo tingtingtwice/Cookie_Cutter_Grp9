@@ -236,7 +236,7 @@ public class Player implements cc2.sim.Player {
 		// return a cut randomly
 		if(moves11.size()>0){
 			int gapOffset = Utils.getGapOffset(shapes, opponent_shapes);
-			Move defenseMv = Utils.getDefenseIndex(dough, shapes, opponent_shapes, lastOppPlay);
+			Move defenseMv = Utils.getDefenseIndex(dough, shapes, opponent_shapes, lastOppPlay, prevDefMoves);
 
 			if (defenseMv != null)
 			{
@@ -245,10 +245,12 @@ public class Player implements cc2.sim.Player {
 				prevDefMoves.add(defenseMv);
 				returnMove = defenseMv;
 			} else {
+				// System.exit(0);
 				Move thisMv = moves11.get(gen.nextInt(moves11.size()));
 				returnMove = thisMv;
 			}
 		} else if (moves8.size()>0) {
+			// System.exit(0);
 			Move fillInMv = Utils.fillInQueueMove(dough, shapes);
 			if ( fillInMv != null ) {
 				returnMove = fillInMv;
