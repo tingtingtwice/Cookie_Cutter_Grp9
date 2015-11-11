@@ -18,6 +18,7 @@ public class Player implements cc2.sim.Player {
 	private int firstTry11 = 0;
 	private int firstTry8 = 0;
 	private int firstTry5 = 0;
+	public int countDestruct = 18;
 
 	private boolean defensive = false;
 	
@@ -149,6 +150,20 @@ public class Player implements cc2.sim.Player {
 			} else if (firstTry5 == 1 ) {
 				
 				cutter[cutter.length - 1] = new Point(0, 1);
+				row_2[0] = true;
+				// System.out.println("Is same cutter?");
+				// System.out.println(cutter[cutter.length - 1].i + ", " + cutter[cutter.length - 1].j );
+				
+				for (int i = 0 ; i != cutter.length - 1 ; ++i){
+					cutter[i] = new Point(i, 0);
+					
+					// System.out.println(cutter[i].i + ", " + cutter[i].j );
+				}
+				firstTry5++;
+			} else if (firstTry5 ==2 ) {
+				
+				cutter[cutter.length - 1] = new Point(3, 1);
+				row_2[3] = true;
 				// System.out.println("Is same cutter?");
 				// System.out.println(cutter[cutter.length - 1].i + ", " + cutter[cutter.length - 1].j );
 				
@@ -159,16 +174,15 @@ public class Player implements cc2.sim.Player {
 				}
 				firstTry5++;
 			} else {
-				
-				cutter[cutter.length - 1] = new Point(3, 1);
-				// System.out.println("Is same cutter?");
-				// System.out.println(cutter[cutter.length - 1].i + ", " + cutter[cutter.length - 1].j );
-				
-				for (int i = 0 ; i != cutter.length - 1 ; ++i){
+				// pick a random cell from 2nd row but not same
+				int i;
+				do {
+					i = 1 + gen.nextInt(1);
+				} while (row_2[i]);
+				row_2[i] = true;
+				cutter[cutter.length - 1] = new Point(i, 1);
+				for (i = 0 ; i != cutter.length - 1 ; ++i)
 					cutter[i] = new Point(i, 0);
-					
-					// System.out.println(cutter[i].i + ", " + cutter[i].j );
-				}
 				firstTry5++;
 			}
 		}
@@ -255,11 +269,13 @@ public class Player implements cc2.sim.Player {
 				returnMove = defenseMv;
 			} else {
 				// System.exit(0);
-				Move destructor = Utils.getDestructor(shapes, dough, oppMoves, savedPoints);
+				Move destructor = getDestructorNew(shapes, dough, savedPoints);
+				Move fillInMv = Utils.fillInQueueMove(dough, shapes);
 				if(destructor != null) returnMove = destructor;
+				else if(fillInMv != null) returnMove = fillInMv;
 				else{
-				Move thisMv = moves11.get(gen.nextInt(moves11.size()));
-				returnMove = thisMv;
+					Move thisMv = moves11.get(gen.nextInt(moves11.size()));
+					returnMove = thisMv;
 				}
 			}
 		} else if (moves8.size()>0) {
@@ -549,7 +565,7 @@ public class Player implements cc2.sim.Player {
     // Updates board and returns all points from opponent's last move
     public ArrayList<Point> getLastOppPoints(Dough dough){
     	// System.out.println("+++++++++++++lastMovePoints length" + lastMovePoints.size());
-    	printAL(lastMovePoints);
+    	// printAL(lastMovePoints);
 
     	ArrayList<Point> lastOppPts = new ArrayList<Point>();
     	// System.out.println("==============lastOppPts length" + lastOppPts.size());
@@ -572,11 +588,43 @@ public class Player implements cc2.sim.Player {
             }
         }
         // System.out.println("---------------- lastOppPts length" + lastOppPts.size());
-        printAL(lastOppPts);
+        // printAL(lastOppPts);
         //System.out.println("NEXT MOVE.");
         
         // if opponent didn't move last move, return null
         return lastOppPts;
+    }
+    public Move getDestructorNew(Shape[] shapes, Dough dough, ArrayList<Point> savedPoints)
+    {
+
+    	for(int i=0; i<oppMoves.size(); i++)
+    	{
+    		ArrayList<Point> oppMv = oppMoves.get(i);
+    		if(oppMv.size() != 11) continue;
+    		for(int pt=0; pt<oppMv.size(); pt++)
+    		{
+    			Point putPt = new Point(oppMv.get(pt).i, oppMv.get(pt).j+1);
+    			//oppPt.j++;
+    			Shape[] rotations = shapes[1].rotations();
+    			int rt=0;
+    			for(Shape s : rotations)
+    			{
+			    	if (countDestruct==0) {
+			    		return null;
+			    	}
+    				if(dough.cuts(s, putPt) && !Utils.inSavedPoints(s, putPt, savedPoints))
+    				{
+    					// oppMoves.remove(pt);
+    					oppMoves.remove(i);
+    					countDestruct--;
+    					return new Move(1,rt,putPt);
+    					
+    				}
+    				rt++;
+    			}
+    		}
+    	}
+    	return null;
     }
 
 }
