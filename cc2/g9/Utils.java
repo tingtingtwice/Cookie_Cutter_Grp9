@@ -261,6 +261,37 @@ public class Utils {
         // System.out.println("No defensive move found.");
         return null;
     }
+    
+    
+    public static Move getDestructor(Shape[] shapes, Dough dough, ArrayList<ArrayList<Point>> oppMoves, ArrayList<Point> savedPoints)
+    {
+    	for(int i=0; i<oppMoves.size(); i++)
+    	{
+    		ArrayList<Point> oppMv = oppMoves.get(i);
+    		if(oppMv.size() != 11) continue;
+    		for(int pt=0; pt<oppMv.size(); pt++)
+    		{
+    			Point putPt = new Point(oppMv.get(pt).i, oppMv.get(pt).j+1);
+    			//oppPt.j++;
+    			Shape[] rotations = shapes[1].rotations();
+    			int rt=0;
+    			for(Shape s : rotations)
+    			{
+    				
+    				if(dough.cuts(s, putPt) && !inSavedPoints(s, putPt, savedPoints))
+    				{
+    					oppMoves.remove(pt);
+    					return new Move(1,rt,putPt);
+    					
+    				}
+    				rt++;
+    			}
+    		}
+    	}
+    	return null;
+    }
+    
+    
 
     public static float getDistBetweenPoints(Point a, Point b){
     	return (float)Math.sqrt(Math.pow(a.j-b.j,2) + Math.pow(a.i-b.i,2));
