@@ -575,13 +575,17 @@ public class Player implements cc2.sim.Player {
                 	// at this point could be opp or self.
                 		board[i][j] = true;
                 		boolean isOpp = true;
-                		for(Point p: lastMovePoints) {
-                			if(p.i == j && p.j ==i) {
-                				isOpp = false;
-                				break;
-                			}
-                		}
-                		if (isOpp ==true ) {
+	                	if(lastMovePoints != null) {
+	                		for(Point p: lastMovePoints) {
+	                			if(p.i == j && p.j ==i) {
+	                				isOpp = false;
+	                				break;
+	                			}
+	                		}
+	                		if (isOpp ==true ) {
+	                			lastOppPts.add(new Point(i, j));
+	                		}
+                		} else {
                 			lastOppPts.add(new Point(i, j));
                 		}
                 }
@@ -589,7 +593,7 @@ public class Player implements cc2.sim.Player {
         }
         // System.out.println("---------------- lastOppPts length" + lastOppPts.size());
         // printAL(lastOppPts);
-        //System.out.println("NEXT MOVE.");
+        // System.out.println("NEXT MOVE.");
         
         // if opponent didn't move last move, return null
         return lastOppPts;
