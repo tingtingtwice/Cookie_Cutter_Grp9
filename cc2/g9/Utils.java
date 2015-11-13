@@ -203,8 +203,13 @@ public class Utils {
         Shape[] rotations = shapes[0].rotations();
         Shape s = rotations[0];
         
-        
         int gapOffset = getGapOffset(shapes, opponent_shapes);
+
+        if(shapes[0].equals(new Shape(get11HockeyShape_2()))){
+        	System.out.println("Increment offset");
+        	gapOffset++;
+        }
+
         boolean flag4 = gapOffset == 4 ? true : false;
         
         ArrayList<Move> queueMoves = new ArrayList<Move>();
@@ -331,5 +336,18 @@ public class Utils {
         return cutter;
     }
 
+    public static Point[] get11HockeyShape_2(){
+		Point[] cutter = new Point [11];
+		for(int i = 0; i < 11; i++) {
+			if(i == 10){
+				cutter[i] = new Point(1,9);
+			}
+			else{
+				cutter[i] = new Point(0, i);				
+			}
+		}
+		
+		return cutter;
+    }
 
 }

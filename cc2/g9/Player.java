@@ -62,17 +62,22 @@ public class Player implements cc2.sim.Player {
 			int half;
 			switch(firstTry11)
 			{
-			case 0: 
-				// half = length / 2+1;
-				// for(int i=0; i<length; i++)
-				// {
-				// 	if (i < half) cutter[i] = new Point(i, 0);
-				// 	else cutter[i] = new Point(half-1, i-(half-1));
-				// }
+			case 0:
 				cutter = get11StraightShape();
-				firstTry11++;
 				break;
 			case 1:
+				cutter = get11HockeyShape_2();
+				break;
+			case 2: 
+				half = length / 2+1;
+				for(int i=0; i<length; i++)
+				{
+					if (i < half) cutter[i] = new Point(i, 0);
+					else cutter[i] = new Point(half-1, i-(half-1));
+				}
+				firstTry11++;
+				break;
+			case 3:
 				half = length / 2 ;
 				for(int i=0; i<length; i++)
 				{
@@ -81,7 +86,7 @@ public class Player implements cc2.sim.Player {
 				}
 				firstTry11++;
 				break;
-			case 2:
+			case 4:
 				half = length / 2 ;
 				for(int i=0; i<length; i++)
 				{
