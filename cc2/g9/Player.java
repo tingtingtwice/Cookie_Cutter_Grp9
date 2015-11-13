@@ -63,12 +63,13 @@ public class Player implements cc2.sim.Player {
 			switch(firstTry11)
 			{
 			case 0: 
-				half = length / 2+1;
-				for(int i=0; i<length; i++)
-				{
-					if (i < half) cutter[i] = new Point(i, 0);
-					else cutter[i] = new Point(half-1, i-(half-1));
-				}
+				// half = length / 2+1;
+				// for(int i=0; i<length; i++)
+				// {
+				// 	if (i < half) cutter[i] = new Point(i, 0);
+				// 	else cutter[i] = new Point(half-1, i-(half-1));
+				// }
+				cutter = get11StraightShape();
 				firstTry11++;
 				break;
 			case 1:
@@ -98,11 +99,11 @@ public class Player implements cc2.sim.Player {
 			{
 				// the misaligned 2x4
 				case 0:
-					cutter = Utils.get8Shape("8alined2x4");
+					cutter = Utils.get8Shape("8misAligned2x4");
 					firstTry8++;
 					break;
 				case 1: 
-					cutter = Utils.get8Shape("8misAligned2x4");
+					cutter = Utils.get8Shape("8aligned2x4");
 					firstTry8++;
 					break;
 				case 2:
@@ -288,6 +289,7 @@ public class Player implements cc2.sim.Player {
 			// must call getLastOppPoints before updateBoardMyMove
 			lastOppPoints = getLastOppPoints(dough);
 			oppMoves.add(lastOppPoints);
+			// System.out.println("returnMove.rotation + returnMove.shape + returnMove.point" + returnMove.rotation + returnMove.shape + returnMove.point);
 			lastMovePoints = updateBoardMyMove(shapes, returnMove);
 			
 		}
@@ -659,6 +661,22 @@ public class Player implements cc2.sim.Player {
 		return cutter;
     }
 
+    public Point[] get11Diagonal(){
+		Point[] cutter = new Point [11];
+		cutter[0] = new Point(0, 0);
+		cutter[1] = new Point(0, 1);
+		cutter[2] = new Point(1, 1);
+		cutter[3] = new Point(1, 2);
+		cutter[4] = new Point(2, 2);
+		cutter[5] = new Point(2, 3);
+		cutter[6] = new Point(3, 3);
+		cutter[7] = new Point(3, 4);
+		cutter[8] = new Point(4, 4);
+		cutter[9] = new Point(4, 5);
+		cutter[10] = new Point(5, 5);
+		
+		return cutter;
+    }
 
 
 }

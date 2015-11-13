@@ -27,7 +27,7 @@ public class Utils {
             int j = (-1)*i + colOffset;
             if (j >= 0 && j < dough.side()){
                 Point thisPt = new Point(i, j);
-                Move thisMv = new Move(0, 2, thisPt);
+                Move thisMv = new Move(0, 0, thisPt);
                 if (dough.cuts(s, thisPt)){
                     return thisMv;
                 } 
@@ -54,13 +54,13 @@ public class Utils {
                         // check if we have chosen a backup neighboring position already
                         if ( isPrevMove2 == false) {
                             if (dough.cuts(s, topPt)) {
-                                return new Move(0, 2, topPt);
+                                return new Move(0, 0, topPt);
                             }else if (dough.cuts(s, bottomPt)) {
-                                return new Move(0, 2, bottomPt);
+                                return new Move(0, 0, bottomPt);
                             }else if (dough.cuts(s, top2Pt)) {
-                                return new Move(0, 2, top2Pt);
+                                return new Move(0, 0, top2Pt);
                             }else if (dough.cuts(s, bottom2Pt)) {
-                                return new Move(0, 2, bottom2Pt);
+                                return new Move(0, 0, bottom2Pt);
                             }
                         }
                     }
@@ -74,7 +74,7 @@ public class Utils {
         System.out.println("size of shapes" + shapes.length);
         System.out.println("size of shapes rotation" + shapes[0].rotations().length);
         Shape[] rotations = shapes[0].rotations();
-        Shape s = rotations[2];
+        Shape s = rotations[0];
         int[] colOffsets = {44, 33, 55, 22, 66, 11, 77};
         int[] densityOffsets = {4, 3, 2, 1};
 
@@ -84,7 +84,7 @@ public class Utils {
                     int j = (-1)*i + colOffset;
                     if (j >=0) {
                         Point thisPt = new Point(i, j);
-                        Move thisMv = new Move(0, 2, thisPt);
+                        Move thisMv = new Move(0, 0, thisPt);
                         if (dough.cuts(s, thisPt)){
                             return thisMv;
                         } 
@@ -160,7 +160,7 @@ public class Utils {
     	
     	Shape[] rotations = shapes[0].rotations();
     	Shape[] op_rotations = opponent_shapes[0].rotations();
-        Shape s = rotations[2];
+        Shape s = rotations[0];
         
         while(gap>0)
         {
@@ -201,7 +201,7 @@ public class Utils {
     public static Move getDefenseIndex(Dough dough, Shape[] shapes, Shape[] opponent_shapes, Point lastOppMove, ArrayList<Move> prevDefMoves) {
 
         Shape[] rotations = shapes[0].rotations();
-        Shape s = rotations[2];
+        Shape s = rotations[0];
         
         
         int gapOffset = getGapOffset(shapes, opponent_shapes);
