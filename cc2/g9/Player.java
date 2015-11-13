@@ -18,7 +18,7 @@ public class Player implements cc2.sim.Player {
 	private int firstTry11 = 0;
 	private int firstTry8 = 0;
 	private int firstTry5 = 0;
-	public int countDestruct = 18;
+	public int countDestruct = 15;
 
 	private boolean defensive = false;
 	
@@ -59,14 +59,17 @@ public class Player implements cc2.sim.Player {
 		///////// 11 shape //////////
 		if (length == 11)
 		{
+			System.out.println("11try = " +firstTry11);
 			int half;
 			switch(firstTry11)
 			{
 			case 0:
 				cutter = get11StraightShape();
+				firstTry11++;
 				break;
 			case 1:
 				cutter = get11HockeyShape_2();
+				firstTry11++;
 				break;
 			case 2: 
 				half = length / 2+1;
@@ -100,19 +103,20 @@ public class Player implements cc2.sim.Player {
 		///////// 8 shape //////////
 		if (length == 8)
 		{
+			System.out.println("8try = " +firstTry8);
 			switch(firstTry8)
 			{
 				// the misaligned 2x4
 				case 0:
-					cutter = Utils.get8Shape("8misAligned2x4");
-					firstTry8++;
-					break;
-				case 1: 
 					cutter = Utils.get8Shape("8aligned2x4");
 					firstTry8++;
 					break;
-				case 2:
+				case 1: 
 					cutter = Utils.get8Shape("8line");
+					firstTry8++;
+					break;
+				case 2:
+					cutter = Utils.get8Shape("8misAligned2x4");
 					firstTry8++;
 					break;
 				case 3:
@@ -137,8 +141,7 @@ public class Player implements cc2.sim.Player {
 				}
 				else{
 					for (int i = 0 ; i != cutter.length ; ++i)
-						cutter[i] = new Point(i, 0);
-					
+						cutter[i] = new Point(i, 0);	
 				}
 
 				row_2 = new boolean [cutter.length - 1];
@@ -170,17 +173,21 @@ public class Player implements cc2.sim.Player {
 					// System.out.println(cutter[i].i + ", " + cutter[i].j );
 				}
 				firstTry5++;
-			} else {
-				// pick a random cell from 2nd row but not same
-				int i;
-				do {
-					i = 1 + gen.nextInt(1);
-				} while (row_2[i]);
-				row_2[i] = true;
-				cutter[cutter.length - 1] = new Point(i, 1);
-				for (i = 0 ; i != cutter.length - 1 ; ++i)
-					cutter[i] = new Point(i, 0);
+			} else if(firstTry5 == 3){
+				cutter[0] = new Point(0,0);
+				cutter[1] = new Point(1,0);
+				cutter[2] = new Point(2,0);
+				cutter[3] = new Point(0,1);
+				cutter[4] = new Point(1,1);
 				firstTry5++;
+			}
+			else{
+				cutter[0] = new Point(0,0);
+				cutter[1] = new Point(1,0);
+				cutter[2] = new Point(2,0);
+				cutter[3] = new Point(2,1);
+				cutter[4] = new Point(1,1);
+				firstTry5++;				
 			}
 		}
 		System.out.println();
