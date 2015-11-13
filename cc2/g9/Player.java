@@ -631,4 +631,43 @@ public class Player implements cc2.sim.Player {
     	return null;
     }
 
+    public Point[] get11StraightShape(){
+		Point[] cutter = new Point [11];
+		for(int i = 0; i < 11; i++) {
+			cutter[i] = new Point(0, i);			
+		}
+		
+		return cutter;    	
+    }
+    
+    public Point[] get11HockeyShape_1(){
+		Point[] cutter = new Point [11];
+		for(int i = 0; i < 11; i++) {
+			if(i == 10){
+				cutter[i] = new Point(1,0);
+			}
+			else{
+				cutter[i] = new Point(0, i);				
+			}
+		}
+		
+		return cutter;    	
+    }
+
+    public Point[] get11HockeyShape_2(){
+		Point[] cutter = new Point [11];
+		for(int i = 0; i < 11; i++) {
+			if(i == 10){
+				cutter[i] = new Point(1,9);
+			}
+			else{
+				cutter[i] = new Point(0, i);				
+			}
+		}
+		
+		return cutter;
+    }
+
+
+
 }
