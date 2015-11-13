@@ -94,36 +94,27 @@ public class Player implements cc2.sim.Player {
 		///////// 8 shape //////////
 		if (length == 8)
 		{
-			if (firstTry8 == 0)
+			switch(firstTry8)
 			{
-				for(int i=0; i<length; i++)
-					if (i<4) cutter[i] = new Point(i,0);
-					else cutter[i] = new Point(i-3,1);
-				firstTry8++;
-			}
-			else
-			{
-				switch(firstTry8)
-				{
+				// the misaligned 2x4
+				case 0:
+					cutter = Utils.get8Shape("8alined2x4");
+					firstTry8++;
+					break;
 				case 1: 
-					for(int i=0; i<length; i++)
-					if (i<5) cutter[i] = new Point(i,0);
-					else cutter[i] = new Point(i-5,1);
+					cutter = Utils.get8Shape("8misAligned2x4");
 					firstTry8++;
 					break;
 				case 2:
-					for(int i=0; i<length; i++)
-					if (i<5) cutter[i] = new Point(i,0);
-					else cutter[i] = new Point(i-4,1);
+					cutter = Utils.get8Shape("8line");
 					firstTry8++;
 					break;
 				case 3:
-					for(int i=0; i<length; i++)
-					if (i<5) cutter[i] = new Point(i,0);
-					else cutter[i] = new Point(i-3,1);
+					cutter = Utils.get8Shape("8diag");
 					firstTry8++;
 					break;
-				}
+				case 4:
+					// huh?
 			}
 		}
 		///////// 5 shape //////////

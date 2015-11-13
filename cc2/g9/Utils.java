@@ -297,5 +297,39 @@ public class Utils {
     	return (float)Math.sqrt(Math.pow(a.j-b.j,2) + Math.pow(a.i-b.i,2));
     }
 
+    public static Point[] get8Shape(String keyword) {
+        int length = 8;
+        Point[] cutter = new Point [length];
+        switch(keyword)
+        {
+            case "8alined2x4":
+                for(int i=0; i<length; i++)
+                    if (i<4) cutter[i] = new Point(i,0);
+                    else cutter[i] = new Point(i-4,1);
+                break;
+            case "8misAligned2x4":
+                for(int i=0; i<length; i++)
+                    if (i<4) cutter[i] = new Point(i,0);
+                    else cutter[i] = new Point(i-3,1);
+                break;
+            case "8line":
+                for(int i=0; i<length; i++)
+                    cutter[i] = new Point(i,0);
+                break;
+            case "8diag":
+                cutter[0] = new Point(0, 0);
+                cutter[1] = new Point(0, 1);
+                cutter[2] = new Point(1, 1);
+                cutter[3] = new Point(1, 2);
+                cutter[4] = new Point(2, 2);
+                cutter[5] = new Point(2, 3);
+                cutter[6] = new Point(3, 3);
+                cutter[7] = new Point(3, 4);
+                break;
+        }
+
+        return cutter;
+    }
+
 
 }
