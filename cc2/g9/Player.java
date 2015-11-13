@@ -18,7 +18,7 @@ public class Player implements cc2.sim.Player {
 	private int firstTry11 = 0;
 	private int firstTry8 = 0;
 	private int firstTry5 = 0;
-	public int countDestruct = 15;
+	public int countDestruct = 0;
 
 	private boolean defensive = false;
 	

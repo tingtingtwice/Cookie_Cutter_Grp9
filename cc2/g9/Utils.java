@@ -224,6 +224,7 @@ public class Utils {
         }
         
         int gapOffset = getGapOffset(shapes, opponent_shapes);
+        int[] colOffsets = {44, 33, 55, 22, 66, 11, 77};
 
         if(shapes[0].equals(new Shape(get11HockeyShape_2()))){
         	System.out.println("Increment offset");
